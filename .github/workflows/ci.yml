@@ -1,0 +1,16 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  run_base_image_tag_collector:
+    name: "Base Image Tag Collection"
+    uses: ./.github/workflows/collect_base_image_tag.yml
+  perform_ci:
+    needs: run_base_image_tag_collector
+    ## GitHub currently does not support evaluating expressions
+    # uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/ci.yml@${{ needs.run_base_image_tag_collector.outputs.base_image_tag }}
+    uses: waggle-sensor/wildnode-image/.github/workflows/ci.yml@main
+    secrets: inherit

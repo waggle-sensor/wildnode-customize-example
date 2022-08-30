@@ -4,7 +4,7 @@ This repository is an example (that can be forked) for how to customize the [wil
 
 > It is **highly recommended** that the entirity of this README is read before getting started.
 
-## How it works?
+# How it works?
 
 The following steps are taken to create the customized [wildnode-image](https://github.com/waggle-sensor/wildnode-image) image:
 
@@ -14,7 +14,7 @@ The following steps are taken to create the customized [wildnode-image](https://
 4. A "secret" version file is created within the cloned [wildnode-image](https://github.com/waggle-sensor/wildnode-image) file system to be included in the resulting build image
 5. The [wildnode-image](https://github.com/waggle-sensor/wildnode-image) build script (i.e. `./_workdir/build.sh`) is executed, creating the customized [wildnode-image](https://github.com/waggle-sensor/wildnode-image) image
 
-## Creating your custom [wildnode-image](https://github.com/waggle-sensor/wildnode-image) repository
+# Creating your custom [wildnode-image](https://github.com/waggle-sensor/wildnode-image) repository
 
 In order to build your own custom [wildnode-image](https://github.com/waggle-sensor/wildnode-image) you will need to create your own GitHub project (ex. `wildnode-myproject`) to store your custom changes and build / store the built images. To create your own project the following steps need to be taken:
 
@@ -22,7 +22,7 @@ In order to build your own custom [wildnode-image](https://github.com/waggle-sen
 
     > You probably want to create your project as a "private" repository as it will contain your secrets to secure your customized image.
 
-2. Execute the steps to setup your own (GitHub Self-Hosted Runner)[https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners]. See [Configuring your GitHub self-hosted runner](#configuring-your-github-self-hosted-runner) below.
+2. Execute the steps to setup your own [GitHub Self-Hosted Runner](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners). See [Configuring your GitHub self-hosted runner](#configuring-your-github-self-hosted-runner) below.
 
     > This is necessary as the image build process requires more resources than are allowed in a standard GitHub runner. It is recommended to use an x86 Linux machine for this self-hosted runner.
 
@@ -30,7 +30,7 @@ Now that your GitHub project exists, you can start committing code changes to it
 
 > In fact, the first commit you should make is to modify the `./project_name` file from the default example project name to something more specific to your project. It is used in the naming of the resulting image file.
 
-## Usage Instructions
+# Usage Instructions
 
 When making custom changes and to secure your own [wildnode-image](https://github.com/waggle-sensor/wildnode-image) image the following steps needs to be taken:
 
@@ -73,21 +73,24 @@ When making custom changes and to secure your own [wildnode-image](https://githu
     -rw-r--r--  1 jswantek  staff  4004545457 Aug 29 16:53 _workdir/testbuild_mfi_nx-1.9.0-0-ga2a8c51.tbz2
     ```
 
-## Creating a Release
+# Creating a Release
 
 After all the code changes have been made and you are happy with the changes, a "release image" can be created in GitHub.
 
 TODO, talk about tagging an
 TODO: need to figure out how to do this.. DO WE NEED TO REPLICATE THE .github ci? maybe?
 
-## Advanced Details & Instructions
+# Advanced Details & Instructions
 
-### Configuring your GitHub self-hosted runner
+## Configuring your GitHub self-hosted runner
 
-TODO
-- how to create a build runner (self-hosted)
+Building the image requires [more resources than are offered in the GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources) and therefore a [GitHub Self-Hosted Runner](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) needs to be created.
 
-### Creating the `root` user credentials
+This repository uses [GitHub Reusable Workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows) to reference the "CI" and "Release" workflows of [wildnode-image](https://github.com/waggle-sensor/wildnode-image). These workflows will use your defined "Self-Hosted Runner" assuming it follows [runner rules](https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-runners).
+
+A
+
+## Creating the `root` user credentials
 
 The `root` credentials file (`/root/credentials`) is a [salted](https://en.wikipedia.org/wiki/Salt_(cryptography)) file used to set the `root` user password on the image. To set the contents of the file do the following:
 
@@ -95,15 +98,33 @@ The `root` credentials file (`/root/credentials`) is a [salted](https://en.wikip
 echo "PASSWORD" | mkpasswd --stdin --method=sha-512
 ```
 
-### Appending a base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) file example
+## Appending a base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) file example
 
-TODO
+Files within the `ROOTFS` directory are copied (in their entirety) to the image file system. If it desired to modify a file on the resulting file system this can be done with the same basic `bash` commands. For example, the following example concatenates the contents to the end of the `config-prod.ini` file.
 
-### Versioning your custom image
+```bash
+pushd ${BASE_WORKDIR}/ROOTFS/etc/waggle/
+cat config.ini-customize >> config-prod.ini
+popd
+```
 
-TODO - talk about how the version file is created
+## Versioning your custom image
 
-TODO 
-- details the purpose of this
+The `build.sh` script creates a version file (`/etc/waggle_version_os_secrets`) in the resulting file system that records the version metadata of the forked build repository (ex. `wildnode-myproject`). This version is constructed from the contents of the `project_name` file and the repository `git` tag.
+
+This version file (along with the base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) version file: `/etc/waggle_version_os`) tell you the exact version of the source within the [wildnode-image](https://github.com/waggle-sensor/wildnode-image) repo and the forked build repository (ex. `wildnode-myproject`) were used to construct the final image.
+
+```bash
+$ cat /etc/waggle_version_os_secrets
+customexample-1.1.2-0-g962859e
+$ cat /etc/waggle_version_os
+nx-1.8.8-0-g5a64cdf [kernel: Tegra186_Linux_R32.4.4_aarch64 | rootfs: Waggle_Linux_Custom-Root-Filesystem_nx-1.8.8-0-g5a64cdf_aarch64 | cti_kernel_extension: CTI-L4T-XAVIER-NX-32.4.4-V005-SAGE-32.4.4.7-0-g205b5bb6d]
+```
+
+The above example indicates the base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) was on `git` tag 1.8.8 (`sha1`: 5a64cdf) while the forked build repository (ex. `wildnode-myproject`) was on `git` tag 1.1.2 (`sha1`: 962859e).
+
+
+
+
 
 DONT tag this repo with a version as its mostly for documentation and we dont want to confuse tags with the open source tag repo

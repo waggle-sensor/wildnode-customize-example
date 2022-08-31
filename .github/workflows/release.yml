@@ -8,10 +8,11 @@ on:
 
 jobs:
   run_base_image_tag_collector:
+    name: "Base Image Tag Collection"
     uses: ./.github/workflows/collect_base_image_tag.yml
-  build_release:
-    name: Build and Create Release
-    runs-on: ubuntu-latest
+  create_release:
     needs: run_base_image_tag_collector
-    steps:
-      - uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/release.yml@${{ needs.run_base_image_tag_collector.outputs.version }}
+    ## GitHub currently does not support evaluating expressions
+    # uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/release.yml@${{ needs.run_base_image_tag_collector.outputs.base_image_tag }}
+    uses: waggle-sensor/wildnode-image/.github/workflows/release.yml@main
+    secrets: inherit

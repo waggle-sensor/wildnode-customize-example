@@ -4,17 +4,13 @@ on:
   pull_request:
     branches: [main]
 
-# jobs:
-#   call-workflow-passing-data:
-#     uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/ci.yml@main
-#     secrets: inherit
-
 jobs:
   run_base_image_tag_collector:
+    name: "Base Image Tag Collection"
     uses: ./.github/workflows/collect_base_image_tag.yml
   perform_ci:
-    name: Perform CI
-    runs-on: ubuntu-latest
     needs: run_base_image_tag_collector
-    steps:
-      - uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/ci.yml@${{ needs.run_base_image_tag_collector.outputs.version }}
+    ## GitHub currently does not support evaluating expressions
+    # uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/ci.yml@${{ needs.run_base_image_tag_collector.outputs.base_image_tag }}
+    uses: waggle-sensor/wildnode-image/.github/workflows/ci.yml@main
+    secrets: inherit

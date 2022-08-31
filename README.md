@@ -86,9 +86,7 @@ TODO: need to figure out how to do this.. DO WE NEED TO REPLICATE THE .github ci
 
 Building the image requires [more resources than are offered in the GitHub-hosted runners](https://docs.github.com/en/actions/using-github-hosted-runners/about-github-hosted-runners#supported-runners-and-hardware-resources) and therefore a [GitHub Self-Hosted Runner](https://docs.github.com/en/actions/hosting-your-own-runners/about-self-hosted-runners) needs to be created.
 
-This repository uses [GitHub Reusable Workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows) to reference the "CI" and "Release" workflows of [wildnode-image](https://github.com/waggle-sensor/wildnode-image). These workflows will use your defined "Self-Hosted Runner" assuming it follows [runner rules](https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-runners).
-
-A
+This repository uses [GitHub Reusable Workflows](https://docs.github.com/en/actions/using-workflows/reusing-workflows) to reference the "CI" and "Release" workflows of [wildnode-image](https://github.com/waggle-sensor/wildnode-image). These workflows will use your defined "Self-Hosted Runner" assuming it follows the [runner rules](https://docs.github.com/en/actions/using-workflows/reusing-workflows#using-runners).
 
 ## Creating the `root` user credentials
 

@@ -16,3 +16,6 @@ jobs:
     # uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/release.yml@${{ needs.run_base_image_tag_collector.outputs.base_image_tag }}
     uses: waggle-sensor/wildnode-image/.github/workflows/release.yml@main
     secrets: inherit
+    with:
+      workdir: _workdir
+      extrasteps: ./overlay.sh

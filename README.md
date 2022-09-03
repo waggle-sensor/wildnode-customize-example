@@ -10,7 +10,7 @@ The following steps are taken to create the customized [wildnode-image](https://
 
 1. The [wildnode-image](https://github.com/waggle-sensor/wildnode-image) code is cloned into a `./_workdir`
 2. Any changes within the `ROOTFS` folder are synced "on top" of the [wildnode-image](https://github.com/waggle-sensor/wildnode-image) cloned code
-3. Any (optional) additional file system modifications are made as defined within the `./build.sh` script
+3. Any (optional) additional file system modifications are made as defined within the `./overlay.sh` script
 4. A "secret" version file is created within the cloned [wildnode-image](https://github.com/waggle-sensor/wildnode-image) file system to be included in the resulting build image
 5. The [wildnode-image](https://github.com/waggle-sensor/wildnode-image) build script (i.e. `./_workdir/build.sh`) is executed, creating the customized [wildnode-image](https://github.com/waggle-sensor/wildnode-image) image
 
@@ -47,9 +47,9 @@ When making custom changes and to secure your own [wildnode-image](https://githu
 
     > See the [wildnode-image](https://github.com/waggle-sensor/wildnode-image) for more details on the secrets that will need to be added to build a fully functional image.
 
-2. Optionally, make modifications to the `./build.sh` script to change how the base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) file system is modified
+2. Optionally, make modifications to the `./overlay.sh` script to change how the base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) file system is modified
 
-    > There is a "placeholder" section within the `./build.sh` script that is intended for more advanced file system customizations. See [Appending a base wildnode-image file example](#appending-a-base-wildnode-image-file-example) below.
+    > There is a "placeholder" section within the `./overlay.sh` script that is intended for more advanced file system customizations. See [Appending a base wildnode-image file example](#appending-a-base-wildnode-image-file-example) below.
 
 3. Update the `./base_image_tag` file to indicate the base version of [wildnode-image](https://github.com/waggle-sensor/wildnode-image) that you want to use.
 
@@ -112,9 +112,11 @@ cat config.ini-customize >> config-prod.ini
 popd
 ```
 
+> The `./overlay.sh` files contains a "placeholder" section setup for customizations.
+
 ## Versioning your custom image
 
-The `build.sh` script creates a version file (`/etc/waggle_version_os_secrets`) in the resulting file system that records the version metadata of the forked build repository (ex. `wildnode-myproject`). This version is constructed from the contents of the `project_name` file and the repository `git` tag.
+The `overlay.sh` script creates a version file (`/etc/waggle_version_os_secrets`) in the resulting file system that records the version metadata of the forked build repository (ex. `wildnode-myproject`). This version is constructed from the contents of the `project_name` file and the repository `git` tag.
 
 This version file (along with the base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) version file: `/etc/waggle_version_os`) tell you the exact version of the source within the [wildnode-image](https://github.com/waggle-sensor/wildnode-image) repo and the forked build repository (ex. `wildnode-myproject`) were used to construct the final image.
 

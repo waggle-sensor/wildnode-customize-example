@@ -1,0 +1,54 @@
+name: Overlay and Cache
+
+on:
+  workflow_call:
+    outputs:
+      overlay_cache_key:
+        description: "The calculated key for the overlay cache"
+        value: ${{ jobs.cache_overlay.outputs.key }}
+      base_image_tag:
+        description: "The base image tag"
+        value: ${{ jobs.cache_overlay.outputs.base_version }}
+
+env:
+  cache-name: overlay-cache
+  workdir: _workdir
+
+jobs:
+  cache_overlay:
+    name: Overlay Software and Calculate Cache Key
+    # we need to run this on the same runner as the workflow using the cache
+    runs-on: self-hosted
+    outputs:
+      key: ${{ steps.calculate_cache_key.outputs.cache_key }}
+      base_version: ${{ steps.read_base_version.outputs.version }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Read Base Software Version
+        id: read_base_version
+        run: |
+          echo ::set-output name=version::$(cat base_image_tag | xargs)
+          cat base_image_tag | xargs
+
+      - name: Overlay Changes on Base Software
+        id: overlay_base
+        run: |
+          ./overlay.sh $workdir
+
+      - name: Calculate Working Directory Cache Key
+        id: calculate_cache_key
+        env:
+          cache_key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('_workdir/**') }}
+        run: |
+          echo ::set-output name=cache_key::$cache_key
+          echo $cache_key
+
+      - name: Cache the Working Directory
+        id: cache_overlay
+        uses: actions/cache@v3
+        with:
+          path: ${{ env.workdir }}
+          key: ${{ steps.calculate_cache_key.outputs.cache_key }}

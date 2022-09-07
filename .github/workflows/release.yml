@@ -7,15 +7,15 @@ on:
       - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
 
 jobs:
-  run_base_image_tag_collector:
-    name: "Base Image Tag Collection"
-    uses: ./.github/workflows/collect_base_image_tag.yml
+  perform_overlay_and_cache:
+    name: Overlay Base Software and Cache
+    uses: ./.github/workflows/overlay_software_and_cache.yml
   create_release:
-    needs: run_base_image_tag_collector
+    name: Create Release
+    needs: perform_overlay_and_cache
     ## GitHub currently does not support evaluating expressions
     # uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/release.yml@${{ needs.run_base_image_tag_collector.outputs.base_image_tag }}
     uses: waggle-sensor/wildnode-image/.github/workflows/release.yml@main
     secrets: inherit
     with:
-      workdir: _workdir
-      extrasteps: ./overlay.sh
+      overlay_cache_key: ${{ needs.perform_overlay_and_cache.outputs.overlay_cache_key }}

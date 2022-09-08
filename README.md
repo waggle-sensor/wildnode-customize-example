@@ -26,6 +26,10 @@ In order to build your own custom [wildnode-image](https://github.com/waggle-sen
 
     > This is necessary as the image build process requires more resources than are allowed in a standard GitHub runner. It is recommended to use an x86 Linux machine for this self-hosted runner.
 
+3. Tag the first commit of your git repository to `v0.0.0` (i.e. `git tag v0.0.0`).
+
+    >This is necessary to ensure a proper version (ex. `customexample-0.0.0-1-gfe06d2d`) can be created and attached to the build image files.
+
 Now that your GitHub project exists, you can start committing code changes to it that will modify the [wildnode-image](https://github.com/waggle-sensor/wildnode-image) file system.
 
 > In fact, the first commit you should make is to modify the `./project_name` file from the default example project name to something more specific to your project (ex. `custom_project`). It is used in the naming of the resulting image file and the [version stored in the image](#versioning-your-custom-image).
@@ -116,15 +120,11 @@ popd
 
 ## Versioning your custom image
 
-The `overlay.sh` script creates a version file (`/etc/waggle_version_os_secrets`) in the resulting file system that records the version metadata of the forked build repository (ex. `wildnode-myproject`). This version is constructed from the contents of the `project_name` file and the repository `git` tag.
-
-This version file (along with the base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) version file: `/etc/waggle_version_os`) tell you the exact version of the source within the [wildnode-image](https://github.com/waggle-sensor/wildnode-image) repo and the forked build repository (ex. `wildnode-myproject`) were used to construct the final image.
+The version string (ex. `customexample-1.1.2-0-g962859e`) of the customized repo (constructed from the contents of the `project_name` file and the repository `git` tag) is appended to the [wildnode-image](https://github.com/waggle-sensor/wildnode-image) version string (ex. `nx-1.8.8-0-g5a64cdf`) at build time. This combined version (ex. `nx-1.8.8-0-g5a64cdf-customexample-1.1.2-0-g962859e`) is included in the resulting image's version file (i.e. `/etc/waggle_version_os`).
 
 ```bash
-$ cat /etc/waggle_version_os_secrets
-customexample-1.1.2-0-g962859e
 $ cat /etc/waggle_version_os
-nx-1.8.8-0-g5a64cdf [kernel: Tegra186_Linux_R32.4.4_aarch64 | rootfs: Waggle_Linux_Custom-Root-Filesystem_nx-1.8.8-0-g5a64cdf_aarch64 | cti_kernel_extension: CTI-L4T-XAVIER-NX-32.4.4-V005-SAGE-32.4.4.7-0-g205b5bb6d]
+nx-1.8.8-0-g5a64cdf-customexample-1.1.2-0-g962859e [kernel: Tegra186_Linux_R32.4.4_aarch64 | rootfs: Waggle_Linux_Custom-Root-Filesystem_nx-1.8.8-0-g5a64cdf-customexample-1.1.2-0-g962859e_aarch64 | cti_kernel_extension: CTI-L4T-XAVIER-NX-32.4.4-V005-SAGE-32.4.4.7-0-g205b5bb6d]
 ```
 
 The above example indicates the base [wildnode-image](https://github.com/waggle-sensor/wildnode-image) was on `git` tag 1.8.8 (`sha1`: 5a64cdf) while the forked build repository (ex. `wildnode-myproject`) was on `git` tag 1.1.2 (`sha1`: 962859e).

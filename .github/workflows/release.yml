@@ -10,12 +10,16 @@ jobs:
   perform_overlay_and_cache:
     name: Overlay Base Software and Cache
     uses: ./.github/workflows/overlay_software_and_cache.yml
+  create_version:
+    name: Create Version
+    uses: ./.github/workflows/create_version.yml
   create_release:
     name: Create Release
-    needs: perform_overlay_and_cache
+    needs: [perform_overlay_and_cache, create_version]
     ## GitHub currently does not support evaluating expressions
     # uses: waggle-sensor/wildnode-image/blob/main/.github/workflows/release.yml@${{ needs.run_base_image_tag_collector.outputs.base_image_tag }}
     uses: waggle-sensor/wildnode-image/.github/workflows/release.yml@main
     secrets: inherit
     with:
       overlay_cache_key: ${{ needs.perform_overlay_and_cache.outputs.overlay_cache_key }}
+      version_extension: ${{ needs.create_version.outputs.version }}

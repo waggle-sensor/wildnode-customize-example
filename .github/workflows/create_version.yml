@@ -1,0 +1,29 @@
+name: Create Version
+
+on:
+  workflow_call:
+    outputs:
+      version:
+        description: "The build version to append to base version."
+        value: ${{ jobs.create_version.outputs.version }}
+
+jobs:
+  create_version:
+    name: Create Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.create_version_string.outputs.version_string }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # checkout all git history
+
+      - name: Create version string
+        id: create_version_string
+        run: |
+          name=$(cat project_name | xargs)
+          gitv=$(git describe --tags --long --dirty | cut -c2-)
+          echo ::set-output name=version_string::$(echo "$name-$gitv")
+          echo "$name-$gitv"
